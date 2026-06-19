@@ -1,0 +1,1306 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#1a3a1a">
+<title>Familie Voetbal App</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#e8f0e8}
+:root{--g:#2d6a2d;--dg:#1a3a1a;--lg:#e8f0e8;--mg:#b0c8b0;--tx:#1a3a1a;--mu:#5a7a5a;--bd:#d0d8d0;--wh:#fff;--sb:env(safe-area-inset-bottom,0px)}
+#app{display:flex;flex-direction:column;height:100%;max-width:430px;margin:0 auto;background:#f4f7f4;position:relative;overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,.15)}
+#header{background:var(--dg);color:#fff;padding:12px 16px 10px;display:flex;align-items:center;gap:10px;flex-shrink:0;min-height:52px}
+#page-title{flex:1;font-size:16px;font-weight:600}
+#scroll-area{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+#bottom-nav{background:#fff;border-top:1px solid var(--bd);display:flex;padding:6px 0;padding-bottom:calc(6px + var(--sb));flex-shrink:0}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:none;cursor:pointer;padding:4px 0;color:#888;font-size:10px;font-family:inherit}
+.nav-btn svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.nav-btn.active{color:var(--g)}
+.page{display:none;padding:14px 16px 90px}
+.page.active{display:block}
+
+/* LOGIN */
+#login-screen{position:absolute;inset:0;background:var(--lg);display:flex;align-items:center;justify-content:center;padding:24px;z-index:100}
+.lcard{background:#fff;border-radius:20px;padding:28px 24px;width:100%;max-width:360px;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.ball{width:64px;height:64px;border-radius:50%;background:var(--g);margin:0 auto 16px;display:flex;align-items:center;justify-content:center}
+.aname{text-align:center;font-size:20px;font-weight:700;color:var(--dg);margin-bottom:4px}
+.asub{text-align:center;font-size:13px;color:var(--mu);margin-bottom:20px}
+.ttoggle{display:grid;grid-template-columns:1fr 1fr;background:#f0f4f0;border-radius:10px;padding:3px;margin-bottom:20px}
+.topt{padding:8px;text-align:center;border-radius:8px;font-size:14px;cursor:pointer;color:var(--mu);transition:all .15s}
+.topt.active{background:#fff;color:var(--dg);font-weight:600}
+.flbl{font-size:11px;font-weight:700;color:var(--mu);letter-spacing:.05em;text-transform:uppercase;margin-bottom:5px}
+.finp{width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:10px;font-size:15px;color:var(--tx);background:#fff;font-family:inherit;outline:none;margin-bottom:14px;transition:border-color .15s}
+.finp:focus{border-color:var(--g)}
+.blogin{width:100%;padding:14px;background:var(--g);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:600;cursor:pointer;font-family:inherit}
+
+/* COMMON */
+.stitle{font-size:18px;font-weight:700;color:var(--dg);margin-bottom:14px}
+.rowsb{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.btnp{background:var(--g);color:#fff;border:none;padding:9px 16px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:6px;font-family:inherit;white-space:nowrap}
+.btns{background:#fff;color:var(--dg);border:1.5px solid var(--bd);padding:9px 16px;border-radius:10px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:500}
+.btnd{background:#fef2f2;color:#b83030;border:1.5px solid #fca5a5;padding:8px 14px;border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;font-weight:500}
+.card{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:10px}
+.empty{background:#f8faf8;border:2px dashed var(--mg);border-radius:12px;padding:36px 20px;text-align:center;color:var(--mu);font-size:14px}
+.ei{font-size:40px;margin-bottom:10px;opacity:.4}
+.badge{font-size:11px;padding:3px 9px;border-radius:999px;font-weight:600;display:inline-block}
+.bsch{background:#f0f4f0;color:var(--mu)}
+.bliv{background:#fff3e0;color:#8a5a00}
+.bdone{background:#e8f0e8;color:var(--g)}
+.pillrow{display:flex;gap:7px;margin-bottom:14px;overflow-x:auto;padding-bottom:2px}
+.pillrow::-webkit-scrollbar{display:none}
+.pill{padding:6px 14px;border-radius:999px;border:1.5px solid var(--bd);font-size:13px;cursor:pointer;background:#fff;color:var(--mu);white-space:nowrap;flex-shrink:0;font-family:inherit;font-weight:500}
+.pill.active{background:var(--g);color:#fff;border-color:var(--g)}
+.ibtn{background:none;border:none;cursor:pointer;padding:7px;border-radius:8px;display:flex;align-items:center;justify-content:center;color:var(--mu)}
+.ibtn:active{background:#f0f0f0}
+.ibtn svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.ibtn.red svg{stroke:#b83030}
+
+/* MODAL */
+.mbg{position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:flex-end}
+.mbg.hidden{display:none}
+.msheet{background:#fff;border-radius:20px 20px 0 0;padding:20px 20px calc(20px + var(--sb));width:100%;max-height:92vh;overflow-y:auto}
+.mhandle{width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 16px}
+.mtitle{font-size:17px;font-weight:700;color:var(--dg);margin-bottom:16px}
+.frow{margin-bottom:12px}
+.flabel{font-size:12px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.04em;margin-bottom:5px}
+.finput{width:100%;padding:11px 13px;border:1.5px solid var(--bd);border-radius:10px;font-size:15px;color:var(--tx);outline:none;font-family:inherit;transition:border-color .15s}
+.finput:focus{border-color:var(--g)}
+.mactions{display:flex;gap:8px;margin-top:16px}
+.mactions button{flex:1}
+.seg{display:flex;gap:6px;flex-wrap:wrap}
+.segbtn{padding:8px 14px;border:1.5px solid var(--bd);border-radius:8px;font-size:13px;cursor:pointer;background:#fff;color:var(--mu);font-family:inherit;font-weight:500;white-space:nowrap}
+.segbtn.active{background:var(--g);color:#fff;border-color:var(--g)}
+
+/* SCOREBOARD */
+.scoreboard{background:var(--dg);border-radius:14px;padding:16px 12px 12px;margin-bottom:12px;color:#fff}
+.sb-teams{display:flex;align-items:flex-start;gap:8px}
+.sb-side{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.sb-name{font-size:12px;color:#9ab09a;text-align:center;line-height:1.2}
+.sb-score{font-size:44px;font-weight:700;line-height:1}
+.sb-adj{display:flex;gap:6px}
+.adj{width:32px;height:32px;border-radius:50%;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-family:inherit;line-height:1}
+.sb-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:8px;gap:4px}
+.sb-timer{font-size:28px;font-weight:700;letter-spacing:2px;font-variant-numeric:tabular-nums}
+.sb-period{font-size:11px;color:#9ab09a}
+.sb-progress{height:4px;background:rgba(255,255,255,.15);border-radius:2px;margin-top:10px;overflow:hidden}
+.sb-bar{height:100%;background:#f59e0b;border-radius:2px;transition:width .5s}
+.sb-ctrls{display:flex;justify-content:center;gap:10px;margin-top:10px}
+.sbctrl{padding:8px 16px;border-radius:8px;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px}
+.sbctrl svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.sbctrl.green{background:var(--g);border-color:var(--g)}
+.sbctrl.amber{background:#d97706;border-color:#d97706}
+
+/* EVENTS */
+.evgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.evbtn{padding:11px 8px;border:1.5px solid var(--bd);border-radius:12px;background:#fff;font-size:13px;color:var(--dg);cursor:pointer;display:flex;align-items:center;gap:7px;font-family:inherit;font-weight:500}
+.evrow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f0f4f0}
+.evrow:last-child{border-bottom:none}
+.evicon{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+
+/* PLAYERS */
+.plrow{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f0f4f0}
+.plrow:last-child{border-bottom:none}
+.avt{width:36px;height:36px;border-radius:50%;background:#e8f0e8;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--g);flex-shrink:0}
+.plname{font-size:14px;font-weight:600;color:var(--dg)}
+.plpos{font-size:11px;color:var(--mu);margin-top:1px}
+.pactions{display:flex;gap:2px;margin-left:auto;flex-shrink:0}
+.postag{padding:5px 10px;border:1.5px solid var(--bd);border-radius:999px;font-size:12px;cursor:pointer;color:var(--mu);background:#fff;font-family:inherit}
+.postag.active{background:var(--g);color:#fff;border-color:var(--g)}
+.posgrid{display:flex;flex-wrap:wrap;gap:6px}
+
+/* STATS */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
+.sc{background:#f0f4f0;border-radius:10px;padding:14px;text-align:center}
+.sv{font-size:26px;font-weight:700;color:var(--dg)}
+.sl{font-size:12px;color:var(--mu);margin-top:2px}
+.resrow{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid #f0f4f0;font-size:14px}
+.resrow:last-child{border-bottom:none}
+.rw{color:#2d6a2d;font-weight:700}
+.rl{color:#b83030;font-weight:700}
+.rd{color:#b87a00;font-weight:700}
+
+/* TEAMS */
+.teamcard{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+.teamlogo{width:48px;height:48px;border-radius:50%;background:#e8f0e8;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;overflow:hidden}
+.teamlogo img{width:100%;height:100%;object-fit:cover}
+
+/* MATCH CARDS */
+.mcard{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:10px}
+.mcard-head{display:flex;justify-content:space-between;align-items:flex-start}
+.mcard-title{font-size:15px;font-weight:700;color:var(--dg);margin-top:5px}
+.mcard-score{font-size:30px;font-weight:700;color:var(--dg);margin:4px 0}
+.mcard-meta{font-size:12px;color:var(--mu)}
+.mcard-actions{display:flex;gap:2px;flex-shrink:0}
+
+/* PITCH */
+.pitchsec{background:#fff;border:1px solid var(--bd);border-radius:14px;padding:14px;margin-bottom:12px}
+.pitchfield{position:relative;background:#3a7a3a;border-radius:8px;height:200px;overflow:hidden}
+.pline{position:absolute;background:rgba(255,255,255,.2)}
+.pcircle{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:65px;height:65px;border-radius:50%;border:1.5px solid rgba(255,255,255,.2)}
+.pcdot{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4)}
+.pdot{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:2px;z-index:2}
+.pdot-c{width:28px;height:28px;border-radius:50%;background:var(--dg);border:2.5px solid #fff;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff}
+.pdot-c.gk{background:#b87a00}
+.pdot-l{font-size:9px;color:#fff;font-weight:600;text-shadow:0 1px 2px rgba(0,0,0,.8);white-space:nowrap;max-width:46px;text-align:center;overflow:hidden;text-overflow:ellipsis}
+
+/* TOAST */
+#toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--dg);color:#fff;padding:10px 20px;border-radius:10px;font-size:14px;font-weight:500;opacity:0;transition:all .25s;z-index:999;pointer-events:none;white-space:nowrap}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="lcard">
+    <div class="ball">
+      <svg width="38" height="38" viewBox="0 0 38 38" fill="none">
+        <circle cx="19" cy="19" r="17" fill="#4a9a4a" stroke="white" stroke-width="1.5"/>
+        <circle cx="19" cy="19" r="7" fill="white"/>
+        <line x1="19" y1="2" x2="13" y2="11" stroke="white" stroke-width="1.2" opacity=".5"/>
+        <line x1="19" y1="2" x2="25" y2="11" stroke="white" stroke-width="1.2" opacity=".5"/>
+        <line x1="2" y1="19" x2="11.5" y2="23" stroke="white" stroke-width="1.2" opacity=".5"/>
+        <line x1="36" y1="19" x2="26.5" y2="23" stroke="white" stroke-width="1.2" opacity=".5"/>
+        <line x1="10" y1="33" x2="15" y2="26" stroke="white" stroke-width="1.2" opacity=".5"/>
+        <line x1="28" y1="33" x2="23" y2="26" stroke="white" stroke-width="1.2" opacity=".5"/>
+      </svg>
+    </div>
+    <div class="aname">Familie Voetbal App</div>
+    <div class="asub">Wedstrijden bijhouden, delen &amp; analyseren</div>
+    <div class="ttoggle">
+      <div class="topt active" onclick="setLTab('login',this)">Inloggen</div>
+      <div class="topt" onclick="setLTab('register',this)">Account maken</div>
+    </div>
+    <div class="flbl">E-MAIL</div>
+    <input class="finp" type="email" id="l-email" placeholder="jij@example.com">
+    <div class="flbl">WACHTWOORD</div>
+    <input class="finp" type="password" id="l-pw" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="blogon" onclick="doLogin()" style="width:100%;padding:14px;background:var(--g);color:#fff;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:inherit">Inloggen</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" style="display:none">
+  <div id="header">
+    <div style="width:30px;height:30px;border-radius:50%;background:#2d6a2d;border:1.5px solid #4a9a4a;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" fill="#4a9a4a" stroke="white" stroke-width=".8"/><circle cx="8" cy="8" r="2.8" fill="white"/></svg>
+    </div>
+    <span id="page-title">Wedstrijden</span>
+    <button class="ibtn" style="color:#fff" onclick="doLogout()" title="Uitloggen">
+      <svg viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+    </button>
+  </div>
+
+  <div id="scroll-area">
+    <!-- WEDSTRIJDEN -->
+    <div class="page active" id="p-wedstrijden">
+      <div class="rowsb">
+        <span class="stitle" style="margin:0">Wedstrijden</span>
+        <button class="btnp" onclick="openMatchModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          + Nieuw
+        </button>
+      </div>
+      <div id="matches-list"></div>
+    </div>
+
+    <!-- LIVE -->
+    <div class="page" id="p-live">
+      <div class="frow">
+        <div class="flabel">Wedstrijd</div>
+        <select class="finput" id="live-match-sel" onchange="onLiveMatchChange()">
+          <option value="">— Kies wedstrijd —</option>
+        </select>
+      </div>
+      <div id="live-content"><div class="empty"><div class="ei">⚽</div>Kies een wedstrijd hierboven om te starten.</div></div>
+    </div>
+
+    <!-- SPELERS -->
+    <div class="page" id="p-spelers">
+      <div class="rowsb">
+        <span class="stitle" style="margin:0">Spelers</span>
+        <button class="btnp" onclick="openPlayerModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Toevoegen
+        </button>
+      </div>
+      <div class="pillrow" id="player-team-pills"></div>
+      <div class="card" id="players-card" style="padding:0 14px"></div>
+    </div>
+
+    <!-- STATS -->
+    <div class="page" id="p-stats">
+      <div class="stitle">Stats</div>
+      <div class="pillrow" id="stats-team-pills"></div>
+      <div class="pillrow" id="stats-type-pills"></div>
+      <div class="sgrid">
+        <div class="sc"><div class="sv" id="st-played">0</div><div class="sl">Gespeeld</div></div>
+        <div class="sc"><div class="sv" id="st-won">0</div><div class="sl">Gewonnen</div></div>
+        <div class="sc"><div class="sv" id="st-gf">0</div><div class="sl">Goals voor</div></div>
+        <div class="sc"><div class="sv" id="st-ga">0</div><div class="sl">Goals tegen</div></div>
+      </div>
+      <div class="card" id="stats-list" style="padding:0 14px"></div>
+    </div>
+
+    <!-- TEAMS -->
+    <div class="page" id="p-teams">
+      <div class="rowsb">
+        <span class="stitle" style="margin:0">Teams</span>
+        <button class="btnp" onclick="openTeamModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          + Team
+        </button>
+      </div>
+      <div id="teams-list"></div>
+    </div>
+
+    <!-- TOERNOOIEN -->
+    <div class="page" id="p-toernooien">
+      <div class="rowsb">
+        <span class="stitle" style="margin:0">Toernooien</span>
+        <button class="btnp" onclick="openTournamentModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" stroke="white" fill="none" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          + Nieuw
+        </button>
+      </div>
+      <div id="tourn-list"></div>
+    </div>
+  </div>
+
+  <nav id="bottom-nav">
+    <button class="nav-btn active" onclick="showPage('wedstrijden',this)">
+      <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Wedstrijden
+    </button>
+    <button class="nav-btn" onclick="showPage('live',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8" fill="currentColor" stroke="none"/></svg>
+      Live
+    </button>
+    <button class="nav-btn" onclick="showPage('spelers',this)">
+      <svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Spelers
+    </button>
+    <button class="nav-btn" onclick="showPage('stats',this)">
+      <svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Stats
+    </button>
+    <button class="nav-btn" onclick="showPage('teams',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M20 21a8 8 0 1 0-16 0"/></svg>
+      Teams
+    </button>
+  </nav>
+</div>
+
+<!-- ====== MODALS ====== -->
+
+<!-- MATCH MODAL -->
+<div class="mbg hidden" id="modal-match" onclick="cmob(event,'modal-match')">
+  <div class="msheet">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="match-modal-title">Nieuwe wedstrijd</div>
+    <div class="frow">
+      <div class="flabel">Team</div>
+      <select class="finput" id="m-team"></select>
+    </div>
+    <div class="frow">
+      <div class="flabel">Tegenstander</div>
+      <input class="finput" type="text" id="m-opp" placeholder="FC Tegenstander">
+    </div>
+    <div class="frow">
+      <div class="flabel">Datum &amp; Tijd</div>
+      <input class="finput" type="datetime-local" id="m-date">
+    </div>
+    <div class="frow">
+      <div class="flabel">Einddatum &amp; Tijd (optioneel)</div>
+      <input class="finput" type="datetime-local" id="m-enddate">
+    </div>
+    <div class="frow">
+      <div class="flabel">Thuis / Uit</div>
+      <div class="seg" id="m-loc-seg">
+        <button class="segbtn active" onclick="setSeg('m-loc-seg',this,'thuis')">🏠 Thuis</button>
+        <button class="segbtn" onclick="setSeg('m-loc-seg',this,'uit')">✈️ Uit</button>
+      </div>
+      <input type="hidden" id="m-loc" value="thuis">
+    </div>
+    <div class="frow">
+      <div class="flabel">Type wedstrijd</div>
+      <div class="seg" id="m-type-seg">
+        <button class="segbtn active" onclick="setSeg('m-type-seg',this,'competitie')">Competitie</button>
+        <button class="segbtn" onclick="setSeg('m-type-seg',this,'vriendschappelijk')">Vriendschappelijk</button>
+        <button class="segbtn" onclick="setSeg('m-type-seg',this,'beker')">Beker</button>
+        <button class="segbtn" onclick="setSeg('m-type-seg',this,'toernooi')">Toernooi</button>
+      </div>
+      <input type="hidden" id="m-type" value="competitie">
+    </div>
+    <div class="frow">
+      <div class="flabel">Status</div>
+      <div class="seg" id="m-status-seg">
+        <button class="segbtn active" onclick="setSeg('m-status-seg',this,'scheduled')">Gepland</button>
+        <button class="segbtn" onclick="setSeg('m-status-seg',this,'live')">Live</button>
+        <button class="segbtn" onclick="setSeg('m-status-seg',this,'done')">Afgelopen</button>
+      </div>
+      <input type="hidden" id="m-status" value="scheduled">
+    </div>
+    <div class="frow" id="m-score-row" style="display:none">
+      <div class="flabel">Eindstand (thuis – uit)</div>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input class="finput" type="number" id="m-hs" min="0" placeholder="0" style="margin:0">
+        <span style="font-size:20px;color:var(--mu)">–</span>
+        <input class="finput" type="number" id="m-as" min="0" placeholder="0" style="margin:0">
+      </div>
+    </div>
+    <input type="hidden" id="m-edit-id" value="">
+    <div class="mactions">
+      <button class="btns" onclick="closeModal('modal-match')">Annuleren</button>
+      <button class="btnp" onclick="saveMatch()">+ Aanmaken</button>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYER MODAL -->
+<div class="mbg hidden" id="modal-player" onclick="cmob(event,'modal-player')">
+  <div class="msheet">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="player-modal-title">Speler toevoegen</div>
+    <div class="frow">
+      <div class="flabel">Team</div>
+      <select class="finput" id="p-team"></select>
+    </div>
+    <div class="frow">
+      <div class="flabel">Naam</div>
+      <input class="finput" type="text" id="p-name" placeholder="Voor- en achternaam">
+    </div>
+    <div class="frow">
+      <div class="flabel">Rugnummer</div>
+      <input class="finput" type="number" id="p-nr" placeholder="1 – 99" min="1" max="99">
+    </div>
+    <div class="frow">
+      <div class="flabel">Positie(s)</div>
+      <div class="posgrid" id="pos-grid">
+        <button class="postag" onclick="tpos('K',this)">K</button>
+        <button class="postag" onclick="tpos('VL',this)">VL</button>
+        <button class="postag" onclick="tpos('VC',this)">VC</button>
+        <button class="postag" onclick="tpos('VR',this)">VR</button>
+        <button class="postag" onclick="tpos('ML',this)">ML</button>
+        <button class="postag" onclick="tpos('MC',this)">MC</button>
+        <button class="postag" onclick="tpos('MR',this)">MR</button>
+        <button class="postag" onclick="tpos('AVL',this)">AVL</button>
+        <button class="postag" onclick="tpos('AVC',this)">AVC</button>
+        <button class="postag" onclick="tpos('AVR',this)">AVR</button>
+        <button class="postag" onclick="tpos('SP',this)">SP</button>
+      </div>
+    </div>
+    <input type="hidden" id="p-edit-id" value="">
+    <div class="mactions">
+      <button class="btns" onclick="closeModal('modal-player')">Annuleren</button>
+      <button class="btnp" onclick="savePlayer()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM MODAL -->
+<div class="mbg hidden" id="modal-team" onclick="cmob(event,'modal-team')">
+  <div class="msheet">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="team-modal-title">Nieuw team toevoegen</div>
+    <div class="frow">
+      <div class="flabel">Teamnaam</div>
+      <input class="finput" type="text" id="t-name" placeholder="FC Voorbeeld JO12-1">
+    </div>
+    <div class="frow">
+      <div class="flabel">Logo (emoji of URL)</div>
+      <input class="finput" type="text" id="t-logo" placeholder="⚽ of https://...">
+    </div>
+    <div class="frow">
+      <div class="flabel">Formaat</div>
+      <div class="seg" id="t-format-seg">
+        <button class="segbtn active" onclick="setSeg('t-format-seg',this,'8tal')">8-tal (60 min, 4 per.)</button>
+        <button class="segbtn" onclick="setSeg('t-format-seg',this,'11tal')">11-tal (90 min, 2 helf.)</button>
+      </div>
+      <input type="hidden" id="t-format" value="8tal">
+    </div>
+    <div class="frow">
+      <div class="flabel">Hoofdteam</div>
+      <div class="seg" id="t-main-seg">
+        <button class="segbtn" onclick="setSeg('t-main-seg',this,'ja')">Ja</button>
+        <button class="segbtn active" onclick="setSeg('t-main-seg',this,'nee')">Nee</button>
+      </div>
+      <input type="hidden" id="t-main" value="nee">
+    </div>
+    <input type="hidden" id="t-edit-id" value="">
+    <div class="mactions">
+      <button class="btns" onclick="closeModal('modal-team')">Annuleren</button>
+      <button class="btnp" onclick="saveTeam()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOURNAMENT MODAL -->
+<div class="mbg hidden" id="modal-tourn" onclick="cmob(event,'modal-tourn')">
+  <div class="msheet">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="tourn-modal-title">Nieuw toernooi</div>
+    <div class="frow">
+      <div class="flabel">Naam</div>
+      <input class="finput" type="text" id="tn-name" placeholder="Zomertoernooi Schiedam">
+    </div>
+    <div class="frow">
+      <div class="flabel">Team</div>
+      <select class="finput" id="tn-team"></select>
+    </div>
+    <div class="frow">
+      <div class="flabel">Datum</div>
+      <input class="finput" type="date" id="tn-date">
+    </div>
+    <div class="frow">
+      <div class="flabel">Locatie</div>
+      <input class="finput" type="text" id="tn-loc" placeholder="Stad of veld">
+    </div>
+    <div class="frow">
+      <div class="flabel">Format</div>
+      <div class="seg" id="tn-fmt-seg">
+        <button class="segbtn active" onclick="setSeg('tn-fmt-seg',this,'groep')">Groepsfase</button>
+        <button class="segbtn" onclick="setSeg('tn-fmt-seg',this,'knockout')">Knockout</button>
+        <button class="segbtn" onclick="setSeg('tn-fmt-seg',this,'poule')">Poule + Finale</button>
+      </div>
+      <input type="hidden" id="tn-fmt" value="groep">
+    </div>
+    <input type="hidden" id="tn-edit-id" value="">
+    <div class="mactions">
+      <button class="btns" onclick="closeModal('modal-tourn')">Annuleren</button>
+      <button class="btnp" onclick="saveTournament()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- EVENT MODAL -->
+<div class="mbg hidden" id="modal-event" onclick="cmob(event,'modal-event')">
+  <div class="msheet">
+    <div class="mhandle"></div>
+    <div class="mtitle" id="event-modal-title">Gebeurtenis toevoegen</div>
+    <div class="frow">
+      <div class="flabel">Type</div>
+      <div class="seg" id="ev-type-seg" style="flex-wrap:wrap">
+        <button class="segbtn active" onclick="setSeg('ev-type-seg',this,'doelpunt')">⚽ Doelpunt</button>
+        <button class="segbtn" onclick="setSeg('ev-type-seg',this,'geel')">🟨 Gele kaart</button>
+        <button class="segbtn" onclick="setSeg('ev-type-seg',this,'rood')">🟥 Rode kaart</button>
+        <button class="segbtn" onclick="setSeg('ev-type-seg',this,'wissel')">🔄 Wissel</button>
+        <button class="segbtn" onclick="setSeg('ev-type-seg',this,'hoekschop')">🏳️ Hoekschop</button>
+        <button class="segbtn" onclick="setSeg('ev-type-seg',this,'strafschop')">🎯 Strafschop</button>
+      </div>
+      <input type="hidden" id="ev-type" value="doelpunt">
+    </div>
+    <div class="frow">
+      <div class="flabel">Speler (optioneel)</div>
+      <input class="finput" type="text" id="ev-player" placeholder="Naam speler">
+    </div>
+    <div class="frow">
+      <div class="flabel">Tijdstip</div>
+      <input class="finput" type="text" id="ev-time" placeholder="bv. 23:14">
+    </div>
+    <div class="frow">
+      <div class="flabel">Periode</div>
+      <input class="finput" type="number" id="ev-period" placeholder="1" min="1" value="1">
+    </div>
+    <input type="hidden" id="ev-match-id" value="">
+    <input type="hidden" id="ev-edit-id" value="">
+    <div class="mactions">
+      <button class="btns" onclick="closeModal('modal-event')">Annuleren</button>
+      <button class="btnp" onclick="saveEvent()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- FORMATION EDITOR -->
+<div class="mbg hidden" id="modal-formation" onclick="cmob(event,'modal-formation')">
+  <div class="msheet">
+    <div class="mhandle"></div>
+    <div class="mtitle">Opstelling aanpassen</div>
+    <div class="frow">
+      <div class="flabel">Formatie (bv. 4-3-3)</div>
+      <input class="finput" type="text" id="form-label" placeholder="4-3-3" maxlength="12">
+    </div>
+    <div id="form-editor-rows" style="margin-bottom:8px"></div>
+    <div class="mactions">
+      <button class="btns" onclick="closeModal('modal-formation')">Sluiten</button>
+      <button class="btnp" onclick="applyFormationEdit()">Opslaan</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+// ── DEFAULTS ─────────────────────────────────────────────────────
+const DEFAULT_STATE = {
+  loggedIn: false,
+  teams: [
+    {id:'team1', name:'Excelsior Maassluis JO12-1', logo:'⚽', format:'8tal', isMain:true},
+    {id:'team2', name:'CWO JO16-1', logo:'⚽', format:'8tal', isMain:false}
+  ],
+  players: [
+    {id:'p1', teamId:'team1', name:'Nick Sordam', nr:10, positions:['SP','AVC']},
+    {id:'p2', teamId:'team2', name:'Joël Sordam', nr:8, positions:['MC','ML']}
+  ],
+  matches: [],
+  tournaments: [],
+  liveMatchId: null,
+  timerMs: 0,
+  timerRunning: false,
+  quarter: 1,
+  formations: {}
+};
+
+// ── STATE ────────────────────────────────────────────────────────
+let S = JSON.parse(JSON.stringify(DEFAULT_STATE));
+
+function save(){ try{ localStorage.setItem('fva2', JSON.stringify(S)); }catch(e){} }
+function load(){
+  try{
+    const d = localStorage.getItem('fva2');
+    if(d){ const p = JSON.parse(d); Object.assign(S, p); }
+  }catch(e){}
+}
+
+// ── SEG HELPER ───────────────────────────────────────────────────
+function setSeg(groupId, el, val){
+  const group = document.getElementById(groupId);
+  group.querySelectorAll('.segbtn').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active');
+  // find hidden input sibling
+  const inp = group.nextElementSibling;
+  if(inp && inp.type==='hidden') inp.value = val;
+  // show/hide score row for status
+  if(groupId==='m-status-seg'){
+    document.getElementById('m-score-row').style.display = (val==='done') ? 'block' : 'none';
+  }
+}
+
+// ── LOGIN ────────────────────────────────────────────────────────
+function setLTab(tab,el){ document.querySelectorAll('.topt').forEach(e=>e.classList.remove('active')); el.classList.add('active'); }
+function doLogin(){
+  const email = document.getElementById('l-email').value.trim();
+  if(!email){ toast('Vul een e-mailadres in'); return; }
+  S.loggedIn = true;
+  save();
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='flex';
+  boot();
+}
+function doLogout(){
+  S.loggedIn = false;
+  save();
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+}
+
+// ── NAV ──────────────────────────────────────────────────────────
+const PTITLES = {wedstrijden:'Wedstrijden',live:'Live bijhouden',spelers:'Spelers',stats:'Stats',teams:'Teams',toernooien:'Toernooien'};
+function showPage(name, btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  const pg = document.getElementById('p-'+name);
+  if(pg) pg.classList.add('active');
+  btn.classList.add('active');
+  document.getElementById('page-title').textContent = PTITLES[name]||name;
+  document.getElementById('scroll-area').scrollTop = 0;
+  if(name==='spelers') renderPlayers();
+  if(name==='stats'){ renderStatPills(); renderStats(); }
+  if(name==='teams') renderTeams();
+  if(name==='toernooien') renderTournaments();
+  if(name==='live') renderLivePicker();
+  if(name==='wedstrijden') renderMatches();
+}
+
+// ── MODAL ────────────────────────────────────────────────────────
+function openModal(id){ document.getElementById(id).classList.remove('hidden'); }
+function closeModal(id){ document.getElementById(id).classList.add('hidden'); }
+function cmob(e,id){ if(e.target.id===id) closeModal(id); }
+
+// ── IDS ──────────────────────────────────────────────────────────
+function uid(){ return '_'+Math.random().toString(36).slice(2,9)+Date.now().toString(36); }
+
+// ── TEAMS ────────────────────────────────────────────────────────
+function populateTeamSelects(){
+  ['m-team','p-team','tn-team'].forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    const cur = el.value;
+    el.innerHTML = S.teams.map(t=>`<option value="${t.id}">${t.name}</option>`).join('');
+    if(cur) el.value = cur;
+  });
+}
+function openTeamModal(editId){
+  document.getElementById('t-edit-id').value = editId||'';
+  if(editId){
+    const t = S.teams.find(x=>x.id===editId);
+    if(!t) return;
+    document.getElementById('team-modal-title').textContent = 'Team bewerken';
+    document.getElementById('t-name').value = t.name;
+    document.getElementById('t-logo').value = t.logo||'';
+    document.getElementById('t-format').value = t.format;
+    document.getElementById('t-main').value = t.isMain?'ja':'nee';
+    // refresh segs
+    refreshSeg('t-format-seg','t-format');
+    refreshSeg('t-main-seg','t-main');
+  } else {
+    document.getElementById('team-modal-title').textContent = 'Nieuw team toevoegen';
+    document.getElementById('t-name').value='';
+    document.getElementById('t-logo').value='';
+    document.getElementById('t-format').value='8tal';
+    document.getElementById('t-main').value='nee';
+    refreshSeg('t-format-seg','t-format');
+    refreshSeg('t-main-seg','t-main');
+  }
+  openModal('modal-team');
+}
+function refreshSeg(groupId, hiddenId){
+  const val = document.getElementById(hiddenId).value;
+  const group = document.getElementById(groupId);
+  group.querySelectorAll('.segbtn').forEach(btn=>{
+    // find value from onclick
+    const m = btn.getAttribute('onclick').match(/'([^']+)'\)$/);
+    if(m) btn.classList.toggle('active', m[1]===val);
+  });
+}
+function saveTeam(){
+  const name = document.getElementById('t-name').value.trim();
+  const logo = document.getElementById('t-logo').value.trim()||'⚽';
+  const format = document.getElementById('t-format').value;
+  const isMain = document.getElementById('t-main').value==='ja';
+  const editId = document.getElementById('t-edit-id').value;
+  if(!name){ toast('Vul een teamnaam in'); return; }
+  if(isMain) S.teams.forEach(t=>t.isMain=false);
+  if(editId){
+    const idx = S.teams.findIndex(t=>t.id===editId);
+    if(idx>=0) S.teams[idx] = {...S.teams[idx], name, logo, format, isMain};
+  } else {
+    S.teams.push({id:uid(), name, logo, format, isMain});
+  }
+  save();
+  closeModal('modal-team');
+  populateTeamSelects();
+  renderTeams();
+  toast(editId?'Team bijgewerkt':'Team toegevoegd');
+}
+function deleteTeam(id){
+  if(S.teams.length<=1){ toast('Minimaal 1 team vereist'); return; }
+  S.teams = S.teams.filter(t=>t.id!==id);
+  S.players = S.players.filter(p=>p.teamId!==id);
+  save(); populateTeamSelects(); renderTeams(); toast('Team verwijderd');
+}
+function renderTeams(){
+  const el = document.getElementById('teams-list');
+  el.innerHTML = S.teams.map(t=>{
+    const fmtLabel = t.format==='8tal'?'8-tal · 60 min · 4 periodes':'11-tal · 90 min · 2 helften';
+    const logoHtml = t.logo&&t.logo.startsWith('http')
+      ? `<img src="${t.logo}" alt="">`
+      : `<span style="font-size:26px">${t.logo||'⚽'}</span>`;
+    return `<div class="teamcard">
+      <div class="teamlogo">${logoHtml}</div>
+      <div style="flex:1">
+        <div style="font-size:15px;font-weight:700;color:var(--dg)">${t.name}</div>
+        <div style="font-size:12px;color:var(--mu);margin-top:2px">${fmtLabel}</div>
+        ${t.isMain?'<span class="badge bdone" style="margin-top:4px">Hoofd team</span>':''}
+      </div>
+      <div style="display:flex;gap:2px">
+        <button class="ibtn" onclick="openTeamModal('${t.id}')" title="Bewerken"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="ibtn red" onclick="deleteTeam('${t.id}')" title="Verwijder"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── MATCHES ──────────────────────────────────────────────────────
+function openMatchModal(editId){
+  populateTeamSelects();
+  const now = new Date(); now.setMinutes(0);
+  document.getElementById('m-edit-id').value = editId||'';
+  document.getElementById('m-score-row').style.display='none';
+  if(editId){
+    const m = S.matches.find(x=>x.id===editId);
+    if(!m) return;
+    document.getElementById('match-modal-title').textContent='Wedstrijd bewerken';
+    document.getElementById('m-team').value = m.teamId;
+    document.getElementById('m-opp').value = m.opponent;
+    document.getElementById('m-date').value = m.date||'';
+    document.getElementById('m-enddate').value = m.endDate||'';
+    document.getElementById('m-loc').value = m.location;
+    document.getElementById('m-type').value = m.type;
+    document.getElementById('m-status').value = m.status;
+    document.getElementById('m-hs').value = m.homeScore!=null?m.homeScore:'';
+    document.getElementById('m-as').value = m.awayScore!=null?m.awayScore:'';
+    if(m.status==='done') document.getElementById('m-score-row').style.display='block';
+    refreshSeg('m-loc-seg','m-loc');
+    refreshSeg('m-type-seg','m-type');
+    refreshSeg('m-status-seg','m-status');
+  } else {
+    document.getElementById('match-modal-title').textContent='Nieuwe wedstrijd';
+    document.getElementById('m-opp').value='';
+    document.getElementById('m-date').value=now.toISOString().slice(0,16);
+    document.getElementById('m-enddate').value='';
+    document.getElementById('m-loc').value='thuis';
+    document.getElementById('m-type').value='competitie';
+    document.getElementById('m-status').value='scheduled';
+    document.getElementById('m-hs').value='';
+    document.getElementById('m-as').value='';
+    refreshSeg('m-loc-seg','m-loc');
+    refreshSeg('m-type-seg','m-type');
+    refreshSeg('m-status-seg','m-status');
+  }
+  openModal('modal-match');
+}
+function saveMatch(){
+  const opp = document.getElementById('m-opp').value.trim();
+  if(!opp){ toast('Vul een tegenstander in'); return; }
+  const teamId = document.getElementById('m-team').value;
+  const date = document.getElementById('m-date').value;
+  const endDate = document.getElementById('m-enddate').value;
+  const location = document.getElementById('m-loc').value;
+  const type = document.getElementById('m-type').value;
+  const status = document.getElementById('m-status').value;
+  const hs = status==='done'?parseInt(document.getElementById('m-hs').value)||0:null;
+  const as = status==='done'?parseInt(document.getElementById('m-as').value)||0:null;
+  const editId = document.getElementById('m-edit-id').value;
+  if(editId){
+    const idx = S.matches.findIndex(m=>m.id===editId);
+    if(idx>=0) S.matches[idx]={...S.matches[idx],teamId,opponent:opp,date,endDate,location,type,status,homeScore:hs,awayScore:as};
+  } else {
+    S.matches.push({id:uid(),teamId,opponent:opp,date,endDate,location,type,status,homeScore:hs,awayScore:as,events:[]});
+  }
+  save();
+  closeModal('modal-match');
+  renderMatches();
+  renderLivePicker();
+  toast(editId?'Wedstrijd bijgewerkt':'Wedstrijd aangemaakt');
+}
+function deleteMatch(id){
+  S.matches = S.matches.filter(m=>m.id!==id);
+  if(S.liveMatchId===id) S.liveMatchId=null;
+  save(); renderMatches(); renderLivePicker(); toast('Wedstrijd verwijderd');
+}
+function renderMatches(){
+  const el = document.getElementById('matches-list');
+  if(!S.matches.length){
+    el.innerHTML='<div class="empty"><div class="ei">📅</div>Geen wedstrijden.<br>Tap <strong>+ Nieuw</strong> om te beginnen.</div>';
+    return;
+  }
+  // sort: live first, then by date desc
+  const sorted = [...S.matches].sort((a,b)=>{
+    const order={live:0,scheduled:1,done:2};
+    if(order[a.status]!==order[b.status]) return order[a.status]-order[b.status];
+    return (b.date||'').localeCompare(a.date||'');
+  });
+  el.innerHTML = sorted.map(m=>{
+    const team = S.teams.find(t=>t.id===m.teamId);
+    const teamName = team?team.name:'Team';
+    const dateStr = m.date?new Date(m.date).toLocaleString('nl-NL',{weekday:'short',day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'–';
+    const endStr = m.endDate?new Date(m.endDate).toLocaleString('nl-NL',{hour:'2-digit',minute:'2-digit'}):'';
+    const badge = m.status==='live'?'<span class="badge bliv">● Live</span>':m.status==='done'?'<span class="badge bdone">✓ Afgelopen</span>':'<span class="badge bsch">📅 Gepland</span>';
+    const score = (m.status==='live'||m.status==='done')&&m.homeScore!=null?`<div class="mcard-score">${m.homeScore} – ${m.awayScore}</div>`:'';
+    const endInfo = m.status==='done'&&endStr?`<span> · Einde ${endStr}</span>`:'';
+    return `<div class="mcard">
+      <div class="mcard-head">
+        <div style="flex:1">
+          ${badge}
+          <div class="mcard-title">${teamName} – ${m.opponent}</div>
+          ${score}
+          <div class="mcard-meta">${dateStr}${endInfo} · ${m.location==='thuis'?'Thuis':'Uit'} · ${m.type}</div>
+        </div>
+        <div class="mcard-actions">
+          <button class="ibtn" onclick="openMatchModal('${m.id}')" title="Bewerken"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="ibtn red" onclick="deleteMatch('${m.id}')" title="Verwijder"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── PLAYERS ──────────────────────────────────────────────────────
+let selPos=[], activePlayerTeam='';
+function openPlayerModal(editId){
+  populateTeamSelects();
+  document.getElementById('p-edit-id').value=editId||'';
+  selPos=[];
+  if(editId){
+    const p=S.players.find(x=>x.id===editId);
+    if(!p) return;
+    document.getElementById('player-modal-title').textContent='Speler bewerken';
+    document.getElementById('p-team').value=p.teamId;
+    document.getElementById('p-name').value=p.name;
+    document.getElementById('p-nr').value=p.nr||'';
+    selPos=[...(p.positions||[])];
+  } else {
+    document.getElementById('player-modal-title').textContent='Speler toevoegen';
+    document.getElementById('p-team').value=activePlayerTeam||S.teams[0]?.id||'';
+    document.getElementById('p-name').value='';
+    document.getElementById('p-nr').value='';
+  }
+  document.querySelectorAll('.postag').forEach(btn=>btn.classList.toggle('active',selPos.includes(btn.textContent)));
+  openModal('modal-player');
+}
+function tpos(code,el){ if(selPos.includes(code)){selPos=selPos.filter(p=>p!==code);el.classList.remove('active');}else{selPos.push(code);el.classList.add('active');} }
+function savePlayer(){
+  const name=document.getElementById('p-name').value.trim();
+  const nr=parseInt(document.getElementById('p-nr').value)||null;
+  const teamId=document.getElementById('p-team').value;
+  const editId=document.getElementById('p-edit-id').value;
+  if(!name){toast('Vul een naam in');return;}
+  if(editId){
+    const idx=S.players.findIndex(p=>p.id===editId);
+    if(idx>=0) S.players[idx]={...S.players[idx],name,nr,positions:selPos,teamId};
+  } else {
+    S.players.push({id:uid(),teamId,name,nr,positions:selPos});
+  }
+  save();closeModal('modal-player');renderPlayers();toast(editId?'Speler bijgewerkt':'Speler toegevoegd');
+}
+function deletePlayer(id){ S.players=S.players.filter(p=>p.id!==id);save();renderPlayers();toast('Speler verwijderd'); }
+function renderPlayers(){
+  // pills
+  const pEl=document.getElementById('player-team-pills');
+  pEl.innerHTML=S.teams.map(t=>`<button class="pill${activePlayerTeam===t.id?' active':''}" onclick="setPlayerTeam('${t.id}')">${t.name}</button>`).join('');
+  if(!activePlayerTeam&&S.teams.length) activePlayerTeam=S.teams[0].id;
+
+  const pl=S.players.filter(p=>p.teamId===activePlayerTeam);
+  const card=document.getElementById('players-card');
+  if(!pl.length){card.innerHTML='<div style="padding:16px;text-align:center;font-size:13px;color:var(--mu)">Geen spelers. Tap <strong>Toevoegen</strong>.</div>';return;}
+  card.innerHTML=pl.map(p=>{
+    const ini=p.name.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
+    return `<div class="plrow">
+      <div class="avt">${ini}</div>
+      <div style="flex:1">
+        <div class="plname">${p.name}${p.nr?` <span style="color:var(--mu);font-weight:400;font-size:12px">#${p.nr}</span>`:''}</div>
+        <div class="plpos">${p.positions&&p.positions.length?p.positions.join(' · '):'–'}</div>
+      </div>
+      <div class="pactions">
+        <button class="ibtn" onclick="openPlayerModal('${p.id}')" title="Bewerken"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+        <button class="ibtn red" onclick="deletePlayer('${p.id}')" title="Verwijder"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+      </div>
+    </div>`;
+  }).join('');
+}
+function setPlayerTeam(id){ activePlayerTeam=id; renderPlayers(); }
+
+// ── STATS ────────────────────────────────────────────────────────
+let activeStatsTeam='', activeStatsType='alle';
+function renderStatPills(){
+  if(!activeStatsTeam&&S.teams.length) activeStatsTeam=S.teams[0].id;
+  document.getElementById('stats-team-pills').innerHTML=S.teams.map(t=>
+    `<button class="pill${activeStatsTeam===t.id?' active':''}" onclick="setStatsTeam('${t.id}')">${t.name}</button>`).join('');
+  const types=['alle','competitie','vriendschappelijk','beker','toernooi'];
+  document.getElementById('stats-type-pills').innerHTML=types.map(tp=>
+    `<button class="pill${activeStatsType===tp?' active':''}" onclick="setStatsType('${tp}')">${tp.charAt(0).toUpperCase()+tp.slice(1)}</button>`).join('');
+}
+function setStatsTeam(id){ activeStatsTeam=id; renderStatPills(); renderStats(); }
+function setStatsType(type){ activeStatsType=type; renderStatPills(); renderStats(); }
+function renderStats(){
+  let ms=S.matches.filter(m=>m.teamId===activeStatsTeam&&m.status==='done');
+  if(activeStatsType!=='alle') ms=ms.filter(m=>m.type===activeStatsType);
+  const won=ms.filter(m=>(m.homeScore||0)>(m.awayScore||0)).length;
+  const gf=ms.reduce((a,m)=>a+(m.homeScore||0),0);
+  const ga=ms.reduce((a,m)=>a+(m.awayScore||0),0);
+  document.getElementById('st-played').textContent=ms.length;
+  document.getElementById('st-won').textContent=won;
+  document.getElementById('st-gf').textContent=gf;
+  document.getElementById('st-ga').textContent=ga;
+  const el=document.getElementById('stats-list');
+  if(!ms.length){el.innerHTML='<div style="padding:14px;text-align:center;font-size:13px;color:var(--mu)">Geen wedstrijden gevonden.</div>';return;}
+  el.innerHTML=ms.map(m=>{
+    const diff=(m.homeScore||0)-(m.awayScore||0);
+    const res=diff>0?`<span class="rw">${m.homeScore}–${m.awayScore} W</span>`:diff<0?`<span class="rl">${m.homeScore}–${m.awayScore} V</span>`:`<span class="rd">${m.homeScore}–${m.awayScore} G</span>`;
+    const team=S.teams.find(t=>t.id===m.teamId);
+    return `<div class="resrow"><span style="color:var(--mu)">${team?team.name:''} – ${m.opponent}</span>${res}</div>`;
+  }).join('');
+}
+
+// ── TOURNAMENTS ──────────────────────────────────────────────────
+function openTournamentModal(editId){
+  populateTeamSelects();
+  document.getElementById('tn-edit-id').value=editId||'';
+  if(editId){
+    const t=S.tournaments.find(x=>x.id===editId);
+    if(!t) return;
+    document.getElementById('tourn-modal-title').textContent='Toernooi bewerken';
+    document.getElementById('tn-name').value=t.name;
+    document.getElementById('tn-team').value=t.teamId;
+    document.getElementById('tn-date').value=t.date||'';
+    document.getElementById('tn-loc').value=t.location||'';
+    document.getElementById('tn-fmt').value=t.format;
+    refreshSeg('tn-fmt-seg','tn-fmt');
+  } else {
+    document.getElementById('tourn-modal-title').textContent='Nieuw toernooi';
+    document.getElementById('tn-name').value='';
+    document.getElementById('tn-date').value='';
+    document.getElementById('tn-loc').value='';
+    document.getElementById('tn-fmt').value='groep';
+    refreshSeg('tn-fmt-seg','tn-fmt');
+  }
+  openModal('modal-tourn');
+}
+function saveTournament(){
+  const name=document.getElementById('tn-name').value.trim();
+  if(!name){toast('Vul een naam in');return;}
+  const teamId=document.getElementById('tn-team').value;
+  const date=document.getElementById('tn-date').value;
+  const location=document.getElementById('tn-loc').value.trim();
+  const format=document.getElementById('tn-fmt').value;
+  const editId=document.getElementById('tn-edit-id').value;
+  if(editId){
+    const idx=S.tournaments.findIndex(t=>t.id===editId);
+    if(idx>=0) S.tournaments[idx]={...S.tournaments[idx],name,teamId,date,location,format};
+  } else {
+    S.tournaments.push({id:uid(),name,teamId,date,location,format});
+  }
+  save();closeModal('modal-tourn');renderTournaments();toast(editId?'Toernooi bijgewerkt':'Toernooi toegevoegd');
+}
+function deleteTournament(id){ S.tournaments=S.tournaments.filter(t=>t.id!==id);save();renderTournaments();toast('Toernooi verwijderd'); }
+function renderTournaments(){
+  const el=document.getElementById('tourn-list');
+  if(!S.tournaments.length){el.innerHTML='<div class="empty"><div class="ei">🏆</div>Geen toernooien.<br>Tap <strong>+ Nieuw</strong> om te beginnen.</div>';return;}
+  el.innerHTML=S.tournaments.map(t=>{
+    const team=S.teams.find(x=>x.id===t.teamId);
+    const dateStr=t.date?new Date(t.date).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'}):'–';
+    return `<div class="card">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between">
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:700;color:var(--dg)">🏆 ${t.name}</div>
+          <div style="font-size:12px;color:var(--mu);margin-top:3px">${dateStr}${t.location?' · '+t.location:''}</div>
+          <div style="font-size:12px;color:var(--mu)">${team?team.name:''} · ${t.format}</div>
+        </div>
+        <div style="display:flex;gap:2px">
+          <button class="ibtn" onclick="openTournamentModal('${t.id}')"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+          <button class="ibtn red" onclick="deleteTournament('${t.id}')"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── LIVE ─────────────────────────────────────────────────────────
+let timerInt=null, timerStart=null;
+
+function renderLivePicker(){
+  const sel=document.getElementById('live-match-sel');
+  const active=S.matches.filter(m=>m.status==='live'||m.status==='scheduled');
+  sel.innerHTML='<option value="">— Kies wedstrijd —</option>'+
+    active.map(m=>{
+      const t=S.teams.find(x=>x.id===m.teamId);
+      return `<option value="${m.id}">${t?t.name:''} – ${m.opponent}</option>`;
+    }).join('');
+  if(S.liveMatchId) sel.value=S.liveMatchId;
+  if(S.liveMatchId) renderLiveContent();
+}
+function onLiveMatchChange(){
+  S.liveMatchId=document.getElementById('live-match-sel').value||null;
+  S.timerMs=0; S.timerRunning=false; S.quarter=1;
+  clearInterval(timerInt); timerInt=null;
+  save(); renderLiveContent();
+}
+function renderLiveContent(){
+  const cont=document.getElementById('live-content');
+  if(!S.liveMatchId){cont.innerHTML='<div class="empty"><div class="ei">⚽</div>Kies een wedstrijd hierboven.</div>';return;}
+  const m=S.matches.find(x=>x.id===S.liveMatchId);
+  if(!m){cont.innerHTML='<div class="empty">Wedstrijd niet gevonden.</div>';return;}
+  const ht=S.teams.find(t=>t.id===m.teamId);
+  const periods=ht&&ht.format==='11tal'?2:4;
+  const minPerP=ht&&ht.format==='11tal'?45:15;
+  const totalMin=periods*minPerP;
+
+  const homeScore=m.homeScore||0;
+  const awayScore=m.awayScore||0;
+  const timeStr=fmtTime(S.timerMs);
+  const progPct=Math.min(100,(S.timerMs/1000/60/totalMin)*100);
+  const isDone=m.status==='done';
+
+  const f=S.formations[S.liveMatchId];
+
+  cont.innerHTML=`
+    <div class="scoreboard">
+      <div class="sb-teams">
+        <div class="sb-side">
+          ${!isDone?`<button class="adj" onclick="chg('home',1)">+</button>`:''}
+          <div class="sb-score" id="sb-home">${homeScore}</div>
+          <div class="sb-name">${m.location==='thuis'?(ht?ht.name:'Thuis'):'Tegenstander'}</div>
+          ${!isDone?`<button class="adj" onclick="chg('home',-1)">–</button>`:''}
+        </div>
+        <div class="sb-mid">
+          <div style="font-size:11px;color:#9ab09a">P${S.quarter}/${periods} · ${minPerP}'</div>
+          <div class="sb-timer" id="sb-timer">${timeStr}</div>
+        </div>
+        <div class="sb-side">
+          ${!isDone?`<button class="adj" onclick="chg('away',1)">+</button>`:''}
+          <div class="sb-score" id="sb-away">${awayScore}</div>
+          <div class="sb-name">${m.location==='uit'?(ht?ht.name:'Thuis'):'Tegenstander'}</div>
+          ${!isDone?`<button class="adj" onclick="chg('away',-1)">–</button>`:''}
+        </div>
+      </div>
+      <div class="sb-progress"><div class="sb-bar" id="sb-bar" style="width:${progPct}%"></div></div>
+      <div class="sb-ctrls">
+        ${isDone
+          ? `<button class="sbctrl" onclick="markStatus('live')">▶ Heropen</button><button class="sbctrl" onclick="openMatchModal('${m.id}')">✏️ Bewerken</button>`
+          : `<button class="sbctrl green" id="sb-play-btn" onclick="toggleTimer()">${S.timerRunning?'⏸ Pauze':'▶ Start'}</button>
+             <button class="sbctrl amber" onclick="nextPeriod(${periods})">Volgend kwart</button>
+             <button class="sbctrl" onclick="markStatus('done')">✓ Einde</button>`
+        }
+      </div>
+    </div>
+    ${isDone?'':`
+    <div class="evgrid">
+      <button class="evbtn" onclick="openEventModal('doelpunt')">⚽ Doelpunt</button>
+      <button class="evbtn" onclick="openEventModal('geel')">🟨 Gele kaart</button>
+      <button class="evbtn" onclick="openEventModal('rood')">🟥 Rode kaart</button>
+      <button class="evbtn" onclick="openEventModal('wissel')">🔄 Wissel</button>
+      <button class="evbtn" onclick="openEventModal('hoekschop')">🏳️ Hoekschop</button>
+      <button class="evbtn" onclick="openEventModal('strafschop')">🎯 Strafschop</button>
+    </div>`}
+    <div class="pitchsec">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:14px;font-weight:700;color:var(--dg)">Opstelling <span style="color:var(--g)">${f?f.label:''}</span></span>
+        <button class="btnp" style="padding:7px 12px;font-size:12px" onclick="openFormationEditor()">✏️ Aanpassen</button>
+      </div>
+      <div class="pitchfield" id="pitchfield">
+        <div class="pline" style="left:10%;right:10%;top:50%;height:1.5px"></div>
+        <div class="pline" style="left:25%;right:25%;top:0;height:13%;width:50%"></div>
+        <div class="pline" style="left:25%;right:25%;bottom:0;height:13%;width:50%"></div>
+        <div class="pcircle"></div><div class="pcdot"></div>
+      </div>
+    </div>
+    <div class="card" id="events-card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <span style="font-size:13px;font-weight:700;color:var(--dg)">Gebeurtenissen (${(m.events||[]).length})</span>
+        <button class="btnp" style="padding:7px 12px;font-size:12px" onclick="openEventModal()">+ Toevoegen</button>
+      </div>
+      <div id="events-list">${renderEventsHtml(m)}</div>
+    </div>`;
+  renderPitch();
+}
+function renderEventsHtml(m){
+  const evs=m.events||[];
+  if(!evs.length) return '<div style="font-size:13px;color:var(--mu)">Nog geen gebeurtenissen.</div>';
+  const icons={doelpunt:'⚽',geel:'🟨',rood:'🟥',wissel:'🔄',hoekschop:'🏳️',strafschop:'🎯'};
+  return evs.map(ev=>`
+    <div class="evrow">
+      <div class="evicon">${icons[ev.type]||'📋'}</div>
+      <div style="flex:1">
+        <div style="font-size:13px;font-weight:600;color:var(--dg)">${ev.type.charAt(0).toUpperCase()+ev.type.slice(1)}${ev.player?' — '+ev.player:''}</div>
+        <div style="font-size:11px;color:var(--mu)">P${ev.period} · ${ev.time}</div>
+      </div>
+      <button class="ibtn" onclick="openEventModal('${ev.type}','${ev.id}')" title="Bewerken"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="ibtn red" onclick="deleteEvent('${ev.id}')" title="Verwijder"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg></button>
+    </div>`).join('');
+}
+function chg(side,delta){
+  const m=S.matches.find(x=>x.id===S.liveMatchId);
+  if(!m) return;
+  if(side==='home') m.homeScore=Math.max(0,(m.homeScore||0)+delta);
+  else m.awayScore=Math.max(0,(m.awayScore||0)+delta);
+  save();
+  document.getElementById('sb-home').textContent=m.homeScore;
+  document.getElementById('sb-away').textContent=m.awayScore;
+}
+function markStatus(status){
+  const m=S.matches.find(x=>x.id===S.liveMatchId);
+  if(!m) return;
+  m.status=status;
+  if(status==='done'&&!m.endDate){
+    m.endDate=new Date().toISOString().slice(0,16);
+  }
+  if(status==='done'){ clearInterval(timerInt); timerInt=null; S.timerRunning=false; }
+  save(); renderLiveContent(); renderMatches(); renderLivePicker();
+  toast(status==='done'?'Wedstrijd afgesloten':'Wedstrijd heropend');
+}
+function toggleTimer(){
+  S.timerRunning=!S.timerRunning;
+  if(S.timerRunning){
+    timerStart=Date.now()-S.timerMs;
+    timerInt=setInterval(()=>{
+      S.timerMs=Date.now()-timerStart;
+      const t=document.getElementById('sb-timer');
+      if(t) t.textContent=fmtTime(S.timerMs);
+      const bar=document.getElementById('sb-bar');
+      if(bar){
+        const m=S.matches.find(x=>x.id===S.liveMatchId);
+        const ht=m?S.teams.find(t=>t.id===m.teamId):null;
+        const periods=ht&&ht.format==='11tal'?2:4;
+        const minPerP=ht&&ht.format==='11tal'?45:15;
+        bar.style.width=Math.min(100,(S.timerMs/1000/60/(periods*minPerP))*100)+'%';
+      }
+    },250);
+    const btn=document.getElementById('sb-play-btn');
+    if(btn) btn.textContent='⏸ Pauze';
+  } else {
+    clearInterval(timerInt); timerInt=null;
+    const btn=document.getElementById('sb-play-btn');
+    if(btn) btn.textContent='▶ Start';
+    save();
+  }
+}
+function nextPeriod(max){
+  S.quarter=S.quarter<max?S.quarter+1:1;
+  S.timerMs=0; clearInterval(timerInt); timerInt=null; S.timerRunning=false;
+  save(); renderLiveContent();
+}
+function fmtTime(ms){ const s=Math.floor(ms/1000),m=Math.floor(s/60); return String(m).padStart(2,'0')+':'+String(s%60).padStart(2,'0'); }
+
+// ── EVENTS ───────────────────────────────────────────────────────
+function openEventModal(type, editId){
+  document.getElementById('ev-match-id').value=S.liveMatchId||'';
+  document.getElementById('ev-edit-id').value=editId||'';
+  if(editId){
+    const m=S.matches.find(x=>x.id===S.liveMatchId);
+    const ev=(m&&m.events||[]).find(e=>e.id===editId);
+    if(ev){
+      document.getElementById('event-modal-title').textContent='Gebeurtenis bewerken';
+      document.getElementById('ev-type').value=ev.type;
+      document.getElementById('ev-player').value=ev.player||'';
+      document.getElementById('ev-time').value=ev.time||'';
+      document.getElementById('ev-period').value=ev.period||1;
+      refreshSeg('ev-type-seg','ev-type');
+    }
+  } else {
+    document.getElementById('event-modal-title').textContent='Gebeurtenis toevoegen';
+    document.getElementById('ev-type').value=type||'doelpunt';
+    document.getElementById('ev-player').value='';
+    document.getElementById('ev-time').value=fmtTime(S.timerMs);
+    document.getElementById('ev-period').value=S.quarter;
+    refreshSeg('ev-type-seg','ev-type');
+  }
+  openModal('modal-event');
+}
+function saveEvent(){
+  const matchId=document.getElementById('ev-match-id').value;
+  const m=S.matches.find(x=>x.id===matchId);
+  if(!m) return;
+  if(!m.events) m.events=[];
+  const type=document.getElementById('ev-type').value;
+  const player=document.getElementById('ev-player').value.trim();
+  const time=document.getElementById('ev-time').value.trim()||fmtTime(S.timerMs);
+  const period=parseInt(document.getElementById('ev-period').value)||S.quarter;
+  const editId=document.getElementById('ev-edit-id').value;
+  if(editId){
+    const idx=m.events.findIndex(e=>e.id===editId);
+    if(idx>=0) m.events[idx]={...m.events[idx],type,player,time,period};
+  } else {
+    m.events.unshift({id:uid(),type,player,time,period});
+  }
+  save(); closeModal('modal-event');
+  const el=document.getElementById('events-list');
+  if(el) el.innerHTML=renderEventsHtml(m);
+  const hdr=document.getElementById('events-card');
+  if(hdr){
+    const span=hdr.querySelector('span');
+    if(span) span.textContent=`Gebeurtenissen (${m.events.length})`;
+  }
+  toast(editId?'Gebeurtenis bijgewerkt':'Gebeurtenis toegevoegd');
+}
+function deleteEvent(evId){
+  const m=S.matches.find(x=>x.id===S.liveMatchId);
+  if(!m) return;
+  m.events=(m.events||[]).filter(e=>e.id!==evId);
+  save();
+  const el=document.getElementById('events-list');
+  if(el) el.innerHTML=renderEventsHtml(m);
+  toast('Gebeurtenis verwijderd');
+}
+
+// ── FORMATION ────────────────────────────────────────────────────
+function openFormationEditor(){
+  if(!S.liveMatchId) return;
+  if(!S.formations[S.liveMatchId]){
+    S.formations[S.liveMatchId]={label:'4-3-3',players:defaultPlayers('4-3-3')};
+  }
+  const f=S.formations[S.liveMatchId];
+  document.getElementById('form-label').value=f.label||'';
+  buildFormRows(f);
+  openModal('modal-formation');
+}
+function defaultPlayers(label){
+  const parts=label.split('-').map(Number).filter(n=>n>0&&!isNaN(n));
+  const dots=[];
+  dots.push({x:50,y:90,num:1,pos:'K',name:''});
+  let nr=2;
+  const rows=parts.length;
+  parts.forEach((cnt,i)=>{
+    const y=70-Math.round((rows-1-i)/(rows)*55);
+    for(let j=0;j<cnt;j++){
+      const x=cnt===1?50:Math.round(15+j*(70/(cnt-1||1)));
+      dots.push({x,y,num:nr,pos:'',name:''});
+      nr++;
+    }
+  });
+  return dots;
+}
+function buildFormRows(f){
+  const rows=document.getElementById('form-editor-rows');
+  rows.innerHTML=(f.players||[]).map((p,i)=>`
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div style="width:30px;height:30px;border-radius:50%;background:${p.pos==='K'?'#b87a00':'var(--dg)'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0">${p.num}</div>
+      <input class="finput" style="flex:1;margin:0" type="text" placeholder="Naam (${p.pos||'?'})" value="${p.name||''}" oninput="S.formations[S.liveMatchId].players[${i}].name=this.value">
+    </div>`).join('');
+}
+function applyFormationEdit(){
+  if(!S.liveMatchId) return;
+  const label=document.getElementById('form-label').value.trim()||'4-3-3';
+  const oldF=S.formations[S.liveMatchId];
+  const sameShape=oldF&&oldF.label===label;
+  const players=sameShape?oldF.players:defaultPlayers(label);
+  S.formations[S.liveMatchId]={label,players};
+  save(); closeModal('modal-formation'); renderLiveContent(); toast('Opstelling opgeslagen');
+}
+function renderPitch(){
+  const field=document.getElementById('pitchfield');
+  if(!field) return;
+  field.querySelectorAll('.pdot').forEach(d=>d.remove());
+  const f=S.formations[S.liveMatchId];
+  if(!f) return;
+  (f.players||[]).forEach(p=>{
+    const div=document.createElement('div');
+    div.className='pdot';
+    div.style.left=p.x+'%'; div.style.top=p.y+'%';
+    const dot=document.createElement('div');
+    dot.className='pdot-c'+(p.pos==='K'?' gk':'');
+    dot.textContent=p.num;
+    const lbl=document.createElement('div');
+    lbl.className='pdot-l';
+    lbl.textContent=p.name||p.pos||'';
+    div.appendChild(dot); div.appendChild(lbl);
+    field.appendChild(div);
+  });
+}
+
+// ── TOAST ────────────────────────────────────────────────────────
+let toastT;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg; el.style.opacity='1'; el.style.transform='translateX(-50%) translateY(0)';
+  clearTimeout(toastT);
+  toastT=setTimeout(()=>{el.style.opacity='0';el.style.transform='translateX(-50%) translateY(20px)';},2500);
+}
+
+// ── BOOT ─────────────────────────────────────────────────────────
+function boot(){
+  populateTeamSelects();
+  activePlayerTeam=S.teams[0]?.id||'';
+  activeStatsTeam=S.teams[0]?.id||'';
+  renderMatches();
+  renderPlayers();
+  renderStatPills();
+  renderStats();
+  renderTeams();
+  renderTournaments();
+  renderLivePicker();
+}
+
+window.addEventListener('DOMContentLoaded',()=>{
+  load();
+  if(S.loggedIn){
+    document.getElementById('login-screen').style.display='none';
+    document.getElementById('app').style.display='flex';
+    boot();
+  }
+});
+</script>
+</body>
+</html>
